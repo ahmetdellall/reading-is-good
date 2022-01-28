@@ -1,0 +1,3 @@
+INSERT INTO tbl_roles(name) VALUES('ROLE_USER');
+INSERT INTO tbl_roles(name) VALUES('ROLE_MODERATOR');
+INSERT INTO tbl_roles(name) VALUES('ROLE_ADMIN');
