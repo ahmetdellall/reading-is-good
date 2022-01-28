@@ -1,6 +1,5 @@
 package com.readingisgood.services;
 
-import com.readingisgood.controller.CustomerController;
 import com.readingisgood.exception.ErrorCodeEnum;
 import com.readingisgood.exception.ReadingIsGoodApiException;
 import com.readingisgood.models.Book;
@@ -90,8 +89,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
     }
 
-    public Map<Month, List<OrderDetail>> getOrderDetailGroupInMount() {
-        List<OrderDetail> orderDetails = orderDetailRepository.findAll();
+    public Map<Month, List<OrderDetail>> getOrderDetailGroupInMount(Long customerId) {
+        List<OrderDetail> orderDetails = orderDetailRepository.findByCustomerId(customerId).stream().collect(Collectors.toList());
 
         return orderDetails.stream()
                 .collect(Collectors.groupingBy(request ->

@@ -16,6 +16,6 @@ public interface OrderDetailService {
 
     OrderDetail getCustomerOrder(Long customerId);
 
-    Map<Month, List<OrderDetail>> getOrderDetailGroupInMount();
+    Map<Month, List<OrderDetail>> getOrderDetailGroupInMount(Long customerId);
 
 }

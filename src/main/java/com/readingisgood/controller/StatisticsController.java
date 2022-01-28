@@ -14,12 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(path = "/api/statistics")
@@ -34,10 +36,10 @@ public class StatisticsController {
     @Autowired
     private OrderDetailServiceImpl orderDetailServiceImpl;
 
-    @GetMapping
-    public ResponseEntity<List<StatisticDTO>> getMonthlyReport() {
+    @GetMapping("{customer-id}")
+    public ResponseEntity<List<StatisticDTO>> getMonthlyReport(@PathVariable(value = "customer-id") Long customerId) {
         try {
-            List<StatisticDTO> statisticDTOS = createdReport();
+            List<StatisticDTO> statisticDTOS = createdReport(customerId);
             LOGGER.info("Statistics report created successfully");
             return ResponseEntity.status(HttpStatus.OK).body(statisticDTOS);
         } catch (Exception e) {
@@ -47,12 +49,12 @@ public class StatisticsController {
     }
 
 
-    private List<StatisticDTO> createdReport() {
+    private List<StatisticDTO> createdReport(Long customerId) {
 
         List<StatisticDTO> statisticDTOS = new ArrayList<>();
 
         Map<Month, List<Book>> allBookCount = bookServiceImpl.getAllBookGroupInMount();
-        Map<Month, List<OrderDetail>> totalOrderDetailGroup = orderDetailServiceImpl.getOrderDetailGroupInMount();
+        Map<Month, List<OrderDetail>> totalOrderDetailGroup = orderDetailServiceImpl.getOrderDetailGroupInMount(customerId);
 
         Map<Month, Integer> allBookCountGroup = allBookCount.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
@@ -81,9 +83,20 @@ public class StatisticsController {
         Arrays.stream(Month.values())
                 .forEach(month -> {
                     StatisticDTO statisticDTO = new StatisticDTO();
-                    Integer bookCount = allBookCountGroup.isEmpty() ? 0 : allBookCountGroup.get(month);
-                    Integer orderCount = allOrderCountGroup.isEmpty() ? 0 : allOrderCountGroup.get(month);
-                    Double purchase = purchaseGroup.isEmpty() ? 0.0 : purchaseGroup.get(month);
+                    Integer bookCount = 0;
+                    if (allBookCountGroup.get(month) != null) {
+                        bookCount = allBookCountGroup.get(month);
+                    }
+
+                    Integer orderCount = 0;
+                    if (allOrderCountGroup.get(month) != null) {
+                        orderCount = allOrderCountGroup.get(month);
+                    }
+
+                    Double purchase = 0.0;
+                    if (purchaseGroup.get(month) != null) {
+                        purchase = purchaseGroup.get(month);
+                    }
                     statisticDTO.setTotalPurchasedAmount(purchase);
                     statisticDTO.setTotalOrderCount(orderCount);
                     statisticDTO.setTotalBookCount(bookCount);

@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  reading-is-good:
+    image: reading-is-good:latest
+    ports:
+      - "8080:8080"
+    restart: on-failure

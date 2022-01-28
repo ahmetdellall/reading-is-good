@@ -12,8 +12,10 @@
     <artifactId>reading-is-good</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>reading-is-good</name>
-    <description>reading-is-good</description>
+    <description>Online books retail firm Application</description>
     <properties>
+        <application.name>${project.artifactId}</application.name>
+        <docker.image.prefix>reading-is-good</docker.image.prefix>
         <java.version>11</java.version>
     </properties>
     <dependencies>
@@ -118,6 +120,19 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.8</version>
+                <configuration>
+                    <repository>${docker.image.prefix}/${project.artifactId}</repository>
+                    <tag>${project.version}</tag>
+                    <buildArgs>
+                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                        <CONFIG_FOLDER>target/classes/docker</CONFIG_FOLDER>
+                    </buildArgs>
                 </configuration>
             </plugin>
         </plugins>
